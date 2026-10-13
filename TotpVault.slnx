@@ -1,0 +1,9 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/TotpVault.App/TotpVault.App.csproj" />
+    <Project Path="src/TotpVault.Core/TotpVault.Core.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/TotpVault.Core.Tests/TotpVault.Core.Tests.csproj" />
+  </Folder>
+</Solution>

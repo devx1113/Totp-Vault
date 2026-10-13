@@ -1,0 +1,53 @@
+<UserControl x:Class="TotpVault.App.Views.SetupView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:controls="clr-namespace:TotpVault.App.Controls">
+    <ScrollViewer VerticalScrollBarVisibility="Auto" Focusable="False">
+        <StackPanel MaxWidth="420" Margin="24,32,24,24">
+            <Image Source="/Assets/logo.png" Width="64" Height="64" HorizontalAlignment="Left"/>
+            <TextBlock Text="TOTP Vault へようこそ" Style="{StaticResource Text.Title}" Margin="0,16,0,0"/>
+            <TextBlock Style="{StaticResource Text.Secondary}" Margin="0,8,0,0"
+                       Text="2段階認証のコードを安全に管理するため、最初にマスターパスワードを設定してください。登録したデータはこのパスワードで暗号化され、さらにこのPCのWindowsアカウントでも保護されます。"/>
+
+            <Border Style="{StaticResource Card}" Margin="0,20,0,0">
+                <StackPanel>
+                    <TextBlock Text="マスターパスワード（8文字以上）" Style="{StaticResource Text.Label}"/>
+                    <PasswordBox x:Name="PasswordBox" PasswordChanged="OnPasswordChanged"/>
+                    <controls:StrengthMeter x:Name="Meter" Margin="0,8,0,0"/>
+
+                    <TextBlock Text="確認のためもう一度入力" Style="{StaticResource Text.Label}" Margin="0,8,0,6"/>
+                    <PasswordBox x:Name="ConfirmBox" KeyDown="OnConfirmKeyDown"/>
+                    <TextBlock x:Name="CapsLockText" Margin="0,8,0,0" FontSize="12" Foreground="{StaticResource Brush.Warning}"
+                               Text="⚠ Caps Lock がオンになっています" Visibility="Collapsed"/>
+
+                    <Border Style="{StaticResource Callout.Warning}" Margin="0,16,0,0">
+                        <StackPanel>
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="&#xE7BA;" Style="{StaticResource Text.Icon}" FontSize="13" Foreground="{StaticResource Brush.Warning}"/>
+                                <TextBlock Text="重要" FontWeight="SemiBold" FontSize="13" Margin="6,0,0,0" Foreground="{StaticResource Brush.Warning}"/>
+                            </StackPanel>
+                            <TextBlock Style="{StaticResource Text.Secondary}" Foreground="#7C4A03" Margin="0,4,0,0"
+                                       Text="マスターパスワードはどこにも保存されないため、忘れた場合はデータを復元できません（開発者も解除できません）。定期的に暗号化バックアップを作成してください。"/>
+                        </StackPanel>
+                    </Border>
+
+                    <CheckBox Margin="0,14,0,0" IsChecked="{Binding Acknowledged}">
+                        <TextBlock Text="上記の内容を理解しました" TextWrapping="Wrap"/>
+                    </CheckBox>
+
+                    <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource Text.Error}" Margin="0,12,0,0"
+                               Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVis}}"/>
+
+                    <Button Content="保管庫を作成" Style="{StaticResource Button.Primary}" Height="42" Margin="0,18,0,0"
+                            Click="OnCreate" IsEnabled="{Binding IsBusy, Converter={StaticResource InverseBool}}"/>
+                    <ProgressBar IsIndeterminate="True" Height="3" Margin="0,10,0,0" BorderThickness="0"
+                                 Foreground="{StaticResource Brush.Accent}" Background="Transparent"
+                                 Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}"/>
+                </StackPanel>
+            </Border>
+
+            <TextBlock Style="{StaticResource Text.Caption}" Margin="4,14,4,0"
+                       Text="別のPCから移行する場合は、作成後に「バックアップから復元」を選択してください。"/>
+        </StackPanel>
+    </ScrollViewer>
+</UserControl>

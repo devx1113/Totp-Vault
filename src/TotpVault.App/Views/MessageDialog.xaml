@@ -1,0 +1,35 @@
+<Window x:Class="TotpVault.App.Views.MessageDialog"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Style="{StaticResource Window.Dialog}"
+        Title="TOTP Vault"
+        Width="460">
+    <Grid Margin="24,22,24,20">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="Auto"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Border x:Name="IconBadge" Width="40" Height="40" CornerRadius="20" VerticalAlignment="Top">
+                <TextBlock x:Name="IconGlyph" Style="{StaticResource Text.Icon}" FontSize="18"/>
+            </Border>
+            <StackPanel Grid.Column="1" Margin="14,0,0,0">
+                <TextBlock x:Name="TitleText" Style="{StaticResource Text.Heading}" Margin="0,2,0,0"/>
+                <TextBlock x:Name="MessageText" Style="{StaticResource Text.Secondary}" Margin="0,8,0,0"/>
+                <StackPanel x:Name="TypingPanel" Visibility="Collapsed" Margin="0,16,0,0">
+                    <TextBlock x:Name="TypingLabel" Style="{StaticResource Text.Label}"/>
+                    <TextBox x:Name="TypingBox" TextChanged="OnTypingChanged"/>
+                </StackPanel>
+            </StackPanel>
+        </Grid>
+        <StackPanel Grid.Row="1" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,24,0,0">
+            <Button x:Name="CancelButton" MinWidth="100" IsCancel="True" Content="キャンセル"/>
+            <Button x:Name="ConfirmButton" MinWidth="100" Margin="8,0,0,0" IsDefault="True" Click="OnConfirm"
+                    Style="{StaticResource Button.Primary}" Content="OK"/>
+        </StackPanel>
+    </Grid>
+</Window>

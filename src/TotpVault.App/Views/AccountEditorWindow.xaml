@@ -1,0 +1,105 @@
+<Window x:Class="TotpVault.App.Views.AccountEditorWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:controls="clr-namespace:TotpVault.App.Controls"
+        Style="{StaticResource Window.Dialog}"
+        Title="{Binding WindowTitle}"
+        Width="470">
+    <StackPanel Margin="24,20,24,20">
+        <TextBlock Text="{Binding WindowTitle}" Style="{StaticResource Text.Heading}"/>
+
+        <Border Style="{StaticResource Callout.Info}" Margin="0,14,0,0"
+                Visibility="{Binding IsSecretFromQr, Converter={StaticResource BoolToVis}}">
+            <DockPanel>
+                <TextBlock Text="&#xED14;" Style="{StaticResource Text.Icon}" FontSize="15" Foreground="{StaticResource Brush.Accent}"/>
+                <Button DockPanel.Dock="Right" Style="{StaticResource Button.Link}" Content="手動入力に切替"
+                        Command="{Binding ClearQrSecretCommand}" VerticalAlignment="Center"/>
+                <TextBlock Text="QRコードからシークレットキーを読み取りました" Margin="8,0,8,0" FontSize="13"
+                           Foreground="{StaticResource Brush.AccentPressed}" VerticalAlignment="Center" TextWrapping="Wrap"/>
+            </DockPanel>
+        </Border>
+
+        <TextBlock Text="サービス名" Style="{StaticResource Text.Label}" Margin="0,16,0,6"/>
+        <TextBox x:Name="IssuerBox" Text="{Binding Issuer, UpdateSourceTrigger=PropertyChanged}" MaxLength="200"
+                 Tag="例: Google、GitHub、Microsoft"/>
+
+        <TextBlock Text="アカウント名" Style="{StaticResource Text.Label}" Margin="0,12,0,6"/>
+        <TextBox Text="{Binding AccountName, UpdateSourceTrigger=PropertyChanged}" MaxLength="200"
+                 Tag="例: user@example.com"/>
+        <TextBlock Style="{StaticResource Text.Caption}" Margin="2,5,0,0" Text="サービス名とアカウント名のどちらかは入力してください。"/>
+
+        <StackPanel Visibility="{Binding ShowSecretInput, Converter={StaticResource BoolToVis}}">
+            <TextBlock Text="シークレットキー" Style="{StaticResource Text.Label}" Margin="0,14,0,6"/>
+            <TextBox x:Name="SecretBox" Text="{Binding SecretText, UpdateSourceTrigger=PropertyChanged}"
+                     FontFamily="{StaticResource Font.Mono}" Tag="例: JBSW Y3DP EHPK 3PXP（otpauth:// のURIも可）"/>
+            <TextBlock Text="{Binding SecretError}" Style="{StaticResource Text.Error}" Margin="2,6,0,0"
+                       Visibility="{Binding SecretError, Converter={StaticResource StringToVis}}"/>
+        </StackPanel>
+
+        <TextBlock Style="{StaticResource Text.Caption}" Margin="2,10,0,0"
+                   Visibility="{Binding IsNew, Converter={StaticResource InverseBoolToVis}}"
+                   Text="安全のため、登録済みのシークレットキーは表示・変更できません。変更する場合はアカウントを削除して再登録してください。"/>
+
+        <Expander Header="詳細設定（アルゴリズム・桁数・更新間隔）" Margin="0,14,0,0" IsExpanded="{Binding ShowAdvanced}"
+                  Foreground="{StaticResource Brush.TextSecondary}" FontSize="13">
+            <StackPanel Margin="0,10,0,0">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="1.3*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="*"/>
+                        <ColumnDefinition Width="10"/>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <StackPanel>
+                        <TextBlock Text="アルゴリズム" Style="{StaticResource Text.Label}"/>
+                        <ComboBox ItemsSource="{Binding AlgorithmOptions}" DisplayMemberPath="Label" SelectedValuePath="Value"
+                                  SelectedValue="{Binding Algorithm}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="2">
+                        <TextBlock Text="桁数" Style="{StaticResource Text.Label}"/>
+                        <ComboBox ItemsSource="{Binding DigitOptions}" SelectedItem="{Binding Digits}"/>
+                    </StackPanel>
+                    <StackPanel Grid.Column="4">
+                        <TextBlock Text="更新間隔（秒）" Style="{StaticResource Text.Label}"/>
+                        <TextBox Text="{Binding PeriodText, UpdateSourceTrigger=PropertyChanged}" MaxLength="3"/>
+                    </StackPanel>
+                </Grid>
+                <TextBlock Text="{Binding PeriodError}" Style="{StaticResource Text.Error}" Margin="2,6,0,0"
+                           Visibility="{Binding PeriodError, Converter={StaticResource StringToVis}}"/>
+                <TextBlock Style="{StaticResource Text.Caption}" Margin="2,6,0,0"
+                           Text="通常は変更不要です（SHA-1・6桁・30秒）。サービス側で指定がある場合のみ変更してください。"/>
+            </StackPanel>
+        </Expander>
+
+        <Border Background="{StaticResource Brush.SurfaceAlt}" BorderBrush="{StaticResource Brush.Border}" BorderThickness="1"
+                CornerRadius="10" Padding="14,10" Margin="0,16,0,0">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel>
+                    <TextBlock Text="プレビュー" Style="{StaticResource Text.Caption}"/>
+                    <TextBlock x:Name="PreviewText" Text="{Binding PreviewCode}" Margin="0,2,0,0" TextWrapping="Wrap"/>
+                </StackPanel>
+                <Grid Grid.Column="1" Width="36" Height="36" VerticalAlignment="Center"
+                      Visibility="{Binding HasPreview, Converter={StaticResource BoolToVis}}">
+                    <controls:CountdownRing Progress="{Binding PreviewProgress}" StrokeThickness="3"
+                                            RingBrush="{StaticResource Brush.Accent}" TrackBrush="{StaticResource Brush.Border}"/>
+                    <TextBlock Text="{Binding PreviewSeconds}" FontSize="11" FontWeight="SemiBold" Foreground="{StaticResource Brush.TextSecondary}"
+                               HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                </Grid>
+            </Grid>
+        </Border>
+        <TextBlock Style="{StaticResource Text.Caption}" Margin="2,6,0,0"
+                   Visibility="{Binding IsNew, Converter={StaticResource BoolToVis}}"
+                   Text="サービス側で確認コードの入力を求められた場合は、このコードを入力して設定を完了してください。"/>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,20,0,0">
+            <Button MinWidth="100" IsCancel="True" Content="キャンセル"/>
+            <Button MinWidth="100" Margin="8,0,0,0" IsDefault="True" Style="{StaticResource Button.Primary}"
+                    Content="{Binding SaveText}" IsEnabled="{Binding CanSave}" Click="OnSave"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

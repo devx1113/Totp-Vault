@@ -1,0 +1,32 @@
+<UserControl x:Class="TotpVault.App.Views.LockView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+    <Grid>
+        <StackPanel MaxWidth="340" VerticalAlignment="Center" Margin="28,0,28,40">
+            <Image Source="/Assets/logo.png" Width="84" Height="84"/>
+            <TextBlock Text="TOTP Vault" Style="{StaticResource Text.Title}" HorizontalAlignment="Center" Margin="0,16,0,0"/>
+            <TextBlock Text="ロックされています" Style="{StaticResource Text.Secondary}" HorizontalAlignment="Center" Margin="0,4,0,0"/>
+
+            <TextBlock Text="マスターパスワード" Style="{StaticResource Text.Label}" Margin="0,28,0,6"/>
+            <PasswordBox x:Name="PasswordBox" KeyDown="OnKeyDown" IsEnabled="{Binding CanInput}"/>
+            <TextBlock x:Name="CapsLockText" Margin="0,8,0,0" FontSize="12" Foreground="{StaticResource Brush.Warning}"
+                       Text="⚠ Caps Lock がオンになっています" Visibility="Collapsed"/>
+            <TextBlock Text="{Binding ErrorMessage}" Style="{StaticResource Text.Error}" Margin="0,10,0,0" TextAlignment="Center"
+                       Visibility="{Binding ErrorMessage, Converter={StaticResource StringToVis}}"/>
+
+            <Button Content="ロック解除" Style="{StaticResource Button.Primary}" Height="42" Margin="0,16,0,0"
+                    Click="OnUnlock" IsEnabled="{Binding CanInput}"/>
+            <ProgressBar IsIndeterminate="True" Height="3" Margin="0,10,0,0" BorderThickness="0"
+                         Foreground="{StaticResource Brush.Accent}" Background="Transparent"
+                         Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}"/>
+
+            <Button Content="パスワードを忘れた場合" Style="{StaticResource Button.Link}" HorizontalAlignment="Center" Margin="0,14,0,0"
+                    Command="{Binding ForgotPasswordCommand}"/>
+        </StackPanel>
+
+        <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,18">
+            <TextBlock Text="&#xEA18;" Style="{StaticResource Text.Icon}" FontSize="12" Foreground="{StaticResource Brush.TextMuted}"/>
+            <TextBlock Text="AES-256-GCM ・ PBKDF2 ・ Windows DPAPI で保護" Style="{StaticResource Text.Caption}" Margin="6,0,0,0"/>
+        </StackPanel>
+    </Grid>
+</UserControl>

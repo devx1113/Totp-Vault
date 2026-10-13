@@ -1,0 +1,59 @@
+<Window x:Class="TotpVault.App.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:vm="clr-namespace:TotpVault.App.ViewModels"
+        xmlns:views="clr-namespace:TotpVault.App.Views"
+        Title="TOTP Vault"
+        Icon="Assets/app.ico"
+        Width="480" Height="800"
+        MinWidth="400" MinHeight="560"
+        WindowStartupLocation="CenterScreen"
+        AllowDrop="True"
+        Style="{StaticResource Window.Base}">
+    <Window.Resources>
+        <DataTemplate DataType="{x:Type vm:SetupViewModel}">
+            <views:SetupView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:LockViewModel}">
+            <views:LockView/>
+        </DataTemplate>
+        <DataTemplate DataType="{x:Type vm:VaultViewModel}">
+            <views:VaultView/>
+        </DataTemplate>
+    </Window.Resources>
+
+    <Grid>
+        <ContentControl Content="{Binding CurrentView}" Focusable="False" IsTabStop="False"/>
+
+        <!-- ドラッグ＆ドロップ時の案内 -->
+        <Border x:Name="DropOverlay" Visibility="Collapsed" IsHitTestVisible="False" Margin="10"
+                Background="#E6EEF0FF" BorderBrush="{StaticResource Brush.Accent}" BorderThickness="2" CornerRadius="14">
+            <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                <TextBlock Text="&#xED14;" Style="{StaticResource Text.Icon}" FontSize="44" Foreground="{StaticResource Brush.Accent}"/>
+                <TextBlock Text="QRコード画像をドロップして追加" Style="{StaticResource Text.Heading}" Margin="0,14,0,0"
+                           Foreground="{StaticResource Brush.AccentPressed}" HorizontalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+
+        <!-- 処理中 -->
+        <Grid Background="{StaticResource Brush.Overlay}" Visibility="{Binding IsBusy, Converter={StaticResource BoolToVis}}">
+            <Border Style="{StaticResource Card}" HorizontalAlignment="Center" VerticalAlignment="Center" Padding="28,20" MinWidth="260">
+                <StackPanel>
+                    <TextBlock Text="{Binding BusyText}" Style="{StaticResource Text.Body}" TextAlignment="Center" HorizontalAlignment="Center"/>
+                    <ProgressBar IsIndeterminate="True" Height="3" Margin="0,14,0,0" BorderThickness="0"
+                                 Foreground="{StaticResource Brush.Accent}" Background="{StaticResource Brush.AccentSoft}"/>
+                </StackPanel>
+            </Border>
+        </Grid>
+
+        <!-- トースト通知 -->
+        <Border VerticalAlignment="Bottom" HorizontalAlignment="Center" Margin="16,0,16,48" Padding="16,10"
+                CornerRadius="8" Background="{StaticResource Brush.Toast}" IsHitTestVisible="False"
+                Visibility="{Binding IsToastVisible, Converter={StaticResource BoolToVis}}">
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="&#xE73E;" Style="{StaticResource Text.Icon}" FontSize="13" Foreground="#86EFAC" Margin="0,0,10,0"/>
+                <TextBlock Text="{Binding ToastMessage}" Foreground="White" FontSize="13" TextWrapping="Wrap" MaxWidth="360" VerticalAlignment="Center"/>
+            </StackPanel>
+        </Border>
+    </Grid>
+</Window>
